@@ -32,8 +32,6 @@ class Monitor extends Component {
                     this.onMqttMessage(message, topic);
                 }, false)
             })
-            const status = 'exec/status/#';
-            mqtt.join(status);
         });
     };
 
@@ -135,37 +133,24 @@ class Monitor extends Component {
             <Grid columns={3} divided>
                 <Grid.Row>
                     <Grid.Column>
-                        <Message>
-                            Shdiur
-                        </Message>
+                        <Message>Shdiur</Message>
                     </Grid.Column>
                     <Grid.Column>
-                        <Message>
-                            Workflow
-                        </Message>
+                        <Message>Workflow</Message>
                     </Grid.Column>
                     <Grid.Column>
-                        <Message>
-                            Galaxy
-                        </Message>
+                        <Message>Galaxy</Message>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row stretched>
                     <Grid.Column>
-                        <Message>
-                            {encoders}
-                        </Message>
+                        <Message>{encoders}</Message>
                     </Grid.Column>
                     <Grid.Column>
-                        <Message>
-                            {cpr}
-                            {wf}
-                        </Message>
+                        <Message>{cpr}{wf}</Message>
                     </Grid.Column>
                     <Grid.Column>
-                        <Message>
-                            {gxy}
-                        </Message>
+                        <Message>{gxy}</Message>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

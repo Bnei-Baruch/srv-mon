@@ -50,10 +50,9 @@ class LoginPage extends Component {
             <Container textAlign='center' >
                 <Message size='massive'>
                     <Message.Header>
-                        {this.props.user === null ? "BB Shidur Admin" : "Welcome, "+this.props.user.name}
+                        {this.props.user === null ? "BB Services Monitor" : "Welcome, "+this.props.user.name}
                         {this.props.user === null ? "" : profile}
                     </Message.Header>
-                    <p>{this.props.user === null ? "Administrative Tools and Services" : "BB Shidur Admin"}</p>
                     {this.props.user === null ? login : logout}
                 </Message>
             </Container>

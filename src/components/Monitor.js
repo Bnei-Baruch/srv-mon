@@ -11,6 +11,8 @@ class Monitor extends Component {
         streamer: {},
         workflow: {},
         galaxy: {},
+        stream: {},
+        janus: {},
         status: {},
         user: null
     };
@@ -37,7 +39,7 @@ class Monitor extends Component {
 
     onMqttMessage = (message, topic) => {
         //console.log("[encoders] Message: ", message, topic.split("/")[2]);
-        const {status, workflow, galaxy} = this.state;
+        const {status, workflow, galaxy, stream, janus} = this.state;
         const id = topic.split("/")[2]
         const root = topic.split("/")[0]
         switch (root) {
@@ -50,13 +52,19 @@ class Monitor extends Component {
                 this.setState({workflow});
                 break;
             case 'janus' :
-                const janus = topic.split("/")[1];
-                galaxy[janus] = message.online;
+                const n = topic.split("/")[1];
+                if(n.match(/^(gxy(\d+))$/)) {
+                    galaxy[n] = message.online;
+                } else if(n.match(/^(str(\d))$/)) {
+                    stream[n] = message.online;
+                } else {
+                    janus[n] = message.online;
+                }
         }
     };
 
     render() {
-        const {status, user, streamer, workflow, galaxy} = this.state;
+        const {status, user, streamer, workflow, galaxy, stream, janus} = this.state;
 
         let login = (<LoginPage user={user} checkPermission={this.checkPermission} />);
 
@@ -128,9 +136,39 @@ class Monitor extends Component {
             </List>
         );
 
+        let str = (
+            <List key='str' divided selection>
+                {Object.keys(stream).map((val, i) => {
+                    return (
+                        <List.Item key={val}>
+                            <Label key={val} color={stream[val] ? 'green' : 'red'} horizontal>
+                                {stream[val] ? 'Online' : 'Offline'}
+                            </Label>
+                            {val}
+                        </List.Item>
+                    )
+                })}
+            </List>
+        );
+
+        let jns = (
+            <List key='jns' divided selection>
+                {Object.keys(janus).map((val, i) => {
+                    return (
+                        <List.Item key={val}>
+                            <Label key={val} color={janus[val] ? 'green' : 'red'} horizontal>
+                                {janus[val] ? 'Online' : 'Offline'}
+                            </Label>
+                            {val}
+                        </List.Item>
+                    )
+                })}
+            </List>
+        );
+
 
         let content = (
-            <Grid columns={3} divided>
+            <Grid columns={5} divided>
                 <Grid.Row>
                     <Grid.Column>
                         <Message>Shdiur</Message>
@@ -140,6 +178,12 @@ class Monitor extends Component {
                     </Grid.Column>
                     <Grid.Column>
                         <Message>Galaxy</Message>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Message>Stream</Message>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Message>Janus</Message>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row stretched>
@@ -151,6 +195,12 @@ class Monitor extends Component {
                     </Grid.Column>
                     <Grid.Column>
                         <Message>{gxy}</Message>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Message>{str}</Message>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Message>{jns}</Message>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

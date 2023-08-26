@@ -1,5 +1,5 @@
 import * as mqtt from 'mqtt';
-import {MQTT_URL} from "./tools";
+import {MQTT_URL, randomString} from "./tools";
 import log from "loglevel";
 
 class MqttMsg {
@@ -23,7 +23,7 @@ class MqttMsg {
         let options = {
             keepalive: 10,
             connectTimeout: 10 * 1000,
-            clientId: user.id,
+            clientId: user.id + "-" + randomString(3),
             protocolId: 'MQTT',
             protocolVersion: 5,
             clean: true,

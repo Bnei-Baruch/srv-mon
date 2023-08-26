@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react'
 import {Grid, Message, List, Label} from 'semantic-ui-react'
 import mqtt from "../shared/mqtt";
+import {kc} from "./UserManager";
 import LoginPage from "./LoginPage";
 import {getData} from "../shared/tools";
 
@@ -8,6 +9,7 @@ import {getData} from "../shared/tools";
 class Monitor extends Component {
 
     state = {
+        allow: null,
         streamer: {},
         workflow: {},
         galaxy: {},
@@ -19,22 +21,28 @@ class Monitor extends Component {
 
     checkPermission = (user) => {
         this.setState({user});
-        getData(`streamer`, (streamer) => {
-            console.log(":: Got streamer: ",streamer);
-            this.setState({streamer});
-            mqtt.init(user, (data) => {
-                console.log("[mqtt] init: ", data);
-                const exec_status = 'exec/status/#';
-                const wf_status = 'workflow/status/#';
-                const janus_status = 'janus/+/status';
-                mqtt.join(exec_status);
-                mqtt.join(janus_status);
-                mqtt.join(wf_status);
-                mqtt.watch((message, topic) => {
-                    this.onMqttMessage(message, topic);
-                }, false)
-            })
-        });
+        const allow = kc.hasRealmRole("shidur_root");
+        if(allow) {
+            this.setState({allow});
+            getData(`streamer`, (streamer) => {
+                console.log(":: Got streamer: ",streamer);
+                this.setState({streamer});
+                mqtt.init(user, (data) => {
+                    console.log("[mqtt] init: ", data);
+                    const exec_status = 'exec/status/#';
+                    const wf_status = 'workflow/status/#';
+                    const janus_status = 'janus/+/status';
+                    mqtt.join(exec_status);
+                    mqtt.join(janus_status);
+                    mqtt.join(wf_status);
+                    mqtt.watch((message, topic) => {
+                        this.onMqttMessage(message, topic);
+                    }, false)
+                })
+            });
+        } else {
+            this.setState({allow: false});
+        }
     };
 
     onMqttMessage = (message, topic) => {
@@ -64,9 +72,9 @@ class Monitor extends Component {
     };
 
     render() {
-        const {status, user, streamer, workflow, galaxy, stream, janus} = this.state;
+        const {allow, status, user, streamer, workflow, galaxy, stream, janus} = this.state;
 
-        let login = (<LoginPage user={user} checkPermission={this.checkPermission} />);
+        let login = (<LoginPage user={user} allow={allow} checkPermission={this.checkPermission} />);
 
         let encoders = Object.keys(streamer).map((key, i) => {
             if(key.match(/^(encoders|restream)$/)) {
@@ -209,7 +217,7 @@ class Monitor extends Component {
         return (
 
             <Fragment>
-                {user ? content : login}
+                {allow ? content : login}
             </Fragment>
         );
     }

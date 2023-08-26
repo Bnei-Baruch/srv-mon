@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {kc,getUser} from './UserManager';
-import {Container,Message,Button,Dropdown,Image} from 'semantic-ui-react';
+import {Container,Message,Button,Dropdown,Image, Divider} from 'semantic-ui-react';
 import logo from './logo.png';
 import {KC_URL} from "../shared/tools";
 
@@ -33,6 +33,7 @@ class LoginPage extends Component {
 
     render() {
 
+        const {user, allow} = this.props;
         const {disabled, loading} = this.state;
 
         let login = (<Button size='massive' primary onClick={this.userLogin} disabled={disabled} loading={loading}>Login</Button>);
@@ -50,10 +51,12 @@ class LoginPage extends Component {
             <Container textAlign='center' >
                 <Message size='massive'>
                     <Message.Header>
-                        {this.props.user === null ? "BB Services Monitor" : "Welcome, "+this.props.user.name}
-                        {this.props.user === null ? "" : profile}
+                        {user ? "Welcome, " + user.name : "BB Services Monitor"}
+                        {user ? profile : ""}
                     </Message.Header>
-                    {this.props.user === null ? login : logout}
+                    <Divider horizontal>-</Divider>
+                    {allow === false && "You does not have permission"}
+                    {user ? logout : login}
                 </Message>
             </Container>
         );

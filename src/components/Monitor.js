@@ -63,10 +63,13 @@ class Monitor extends Component {
                 const n = topic.split("/")[1];
                 if(n.match(/^(gxy(\d+))$/)) {
                     galaxy[n] = message.online;
+                    this.setState({galaxy});
                 } else if(n.match(/^(str(\d))$/)) {
                     stream[n] = message.online;
+                    this.setState({stream});
                 } else {
                     janus[n] = message.online;
+                    this.setState({janus});
                 }
         }
     };
